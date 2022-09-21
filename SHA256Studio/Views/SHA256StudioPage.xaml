@@ -1,0 +1,257 @@
+﻿<Page
+    x:Class="SHA256Studio.Views.SHA256StudioPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Narrow">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PageTitleTextBlock.Margin" Value="0,0,0,0"/>
+                        <Setter Target="PageContentGrid.Margin" Value="0,0,4,4"/>
+                        <Setter Target="AppBarButtonScrollViewer.Margin" Value="0,0,0,0"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Wide">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}" />
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PageTitleTextBlock.Margin" Value="12,0,0,0"/>
+                        <Setter Target="PageContentGrid.Margin" Value="24,0,4,4"/>
+                        <Setter Target="AppBarButtonScrollViewer.Margin" Value="24,0,0,0"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="PageTitleTextBlock"
+                   Grid.Row="0"
+                   Style="{StaticResource TitleTextBlockStyle}" 
+                   Text="SHA256Studio"
+                   Margin="0,0,4,0"/>
+
+        <ScrollViewer x:Name="AppBarButtonScrollViewer"
+                      Grid.Row="1">
+            <StackPanel x:Name="AppBarButtonStackPanel"
+                        Orientation="Horizontal">
+                <AppBarButton x:Name="HomeAppBarButton"
+                              Label="Home"
+                              ToolTipService.ToolTip="Go to Home page"
+                              Icon="Home"
+                              Tapped="HomeAppBarButton_Tapped"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!--page content goes here-->
+        <Grid x:Name="PageContentGrid"
+              Grid.Row="2">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0"
+                        Margin="0,12,0,12">
+
+                <TextBlock x:Name="HashMessageTextBlock"
+                           Text="Hash a 0 byte long message using SHA256."
+                           IsTextSelectionEnabled="True"
+                           Margin="0,0,4,12"/>
+
+                <TextBlock Text="Hash"
+                           IsTextSelectionEnabled="True"
+                           TextWrapping="Wrap"
+                           Margin="0,0,4,0"/>
+
+                <TextBlock x:Name="HashTextBlock"
+                           TextWrapping="Wrap"
+                           IsTextSelectionEnabled="True"
+                           Margin="0,0,4,0"/>
+
+                <TextBlock Text="Hash calculated with System.Security.Cryptography"
+                           IsTextSelectionEnabled="True"
+                           TextWrapping="Wrap"
+                           Margin="0,4,4,4"/>
+
+                <TextBlock x:Name="SystemSecurityCryptographyMessageDigestTextBlock"
+                           TextWrapping="Wrap"
+                           IsTextSelectionEnabled="True"
+                           Margin="0,0,4,0"/>
+            </StackPanel>
+
+            <ScrollViewer x:Name="SHA256PageScrollViewer"
+                          Grid.Row="1"
+                          VerticalAlignment="Top">
+
+                <StackPanel Margin="0,4,4,4">
+
+                    <StackPanel x:Name="TopInputTextStackpanel">
+
+                        <TextBlock VerticalAlignment="Bottom"
+                                   Grid.Column="0"
+                                   Text="Input:"
+                                   IsTextSelectionEnabled="True"
+                                   Margin="0,0,4,0"/>
+
+                        <TextBox x:Name="TextAsInputTextBox"
+                                 VerticalAlignment="Bottom"
+                                 Grid.Column="0"
+                                 Text="abc"
+                                 PlaceholderText="Enter text to digest with SHA256"
+                                 ToolTipService.ToolTip="Enter text to digest with SHA256"
+                                 TextWrapping="Wrap"
+                                 IsSpellCheckEnabled="False"
+                                 TextChanged="TextAsInputTextBox_TextChanged"
+                                 Margin="0,0,4,0"/>
+
+                    </StackPanel>
+
+                    <StackPanel x:Name="InputStackpanel"
+                                Margin="0,4,0,4">
+
+                        <Grid x:Name="InputTextHeaderGrid" 
+                              Margin="0,4,0,4">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock VerticalAlignment="Bottom"
+                                       Text="Input as binary"
+                                       TextWrapping="Wrap"
+                                       Grid.Column="0"
+                                       IsTextSelectionEnabled="True"
+                                       Margin="0,0,4,0"/>
+
+                            <TextBlock VerticalAlignment="Bottom"
+                                       HorizontalAlignment="Right"
+                                       Text="Length"
+                                       TextWrapping="Wrap"
+                                       Grid.Column="1"
+                                       IsTextSelectionEnabled="True"
+                                       Margin="0,0,4,0"/>
+
+                            <TextBlock VerticalAlignment="Bottom"
+                                       HorizontalAlignment="Right"
+                                       Text="Length as binary"
+                                       TextWrapping="Wrap"
+                                       Grid.Column="2"
+                                       IsTextSelectionEnabled="True"
+                                       Margin="0,0,4,0"/>
+
+                        </Grid>
+
+                        <Grid x:Name="InputTextGrid"
+                              Margin="0,4,0,4">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock x:Name="BinaryInputTextBlock"
+                                       VerticalAlignment="Bottom"
+                                       Text="0111011111100011"
+                                       Grid.Column="0"
+                                       TextWrapping="Wrap"
+                                       IsTextSelectionEnabled="True"
+                                       Margin="0,0,4,0"/>
+
+                            <TextBlock x:Name="BinaryInputLengthTextBlock"
+                                       VerticalAlignment="Bottom"
+                                       HorizontalAlignment="Right"
+                                       Text="24 bits"
+                                       Grid.Column="1"
+                                       TextWrapping="Wrap"
+                                       IsTextSelectionEnabled="True"
+                                       Margin="0,0,4,0"/>
+
+                            <TextBlock x:Name="BinaryInputLengthAsBinaryTextBlock"
+                                       VerticalAlignment="Bottom"
+                                       HorizontalAlignment="Right"
+                                       Text="10110111"
+                                       Grid.Column="2"
+                                       TextWrapping="Wrap"
+                                       IsTextSelectionEnabled="True"
+                                       Margin="0,0,4,0"/>
+                        </Grid>
+
+                    </StackPanel>
+
+                    <StackPanel x:Name="BinaryMessageTextStackpanel"
+                                Margin="0,4,0,4">
+
+                        <TextBlock x:Name="MessageBlockCountTextBlock"
+                                   Text="Message block: 1"
+                                   Margin="0,4,4,4"/>
+
+                        <Grid x:Name="BinaryMessageTextHeaderGrid">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock VerticalAlignment="Bottom"
+                                       Grid.Column="0"
+                                       Text="Message block as binary to digest"
+                                       IsTextSelectionEnabled="True"
+                                       Margin="0,4,4,4"/>
+                        </Grid>
+
+                        <Grid x:Name="PaddedMessageGrid"
+                              Margin="0,4,0,4">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="86*"/>
+                                <ColumnDefinition Width="27*"/>
+                                <ColumnDefinition Width="194*"/>
+                                <ColumnDefinition Width="77*"/>
+                                <ColumnDefinition Width="77*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock x:Name="MessageBlockTextBlock"
+                                       VerticalAlignment="Center"
+                                       Text="0111011111100011"
+                                       Grid.Column="0"
+                                       TextWrapping="Wrap"
+                                       IsTextSelectionEnabled="True"
+                                       Margin="0,0,4,0" Grid.ColumnSpan="3"/>
+
+                            <TextBlock x:Name="MessageBlockLengthTextBlock"
+                                       VerticalAlignment="Bottom"
+                                       HorizontalAlignment="Right"
+                                       Text="24 bits"
+                                       Grid.Column="3"
+                                       TextWrapping="Wrap"
+                                       IsTextSelectionEnabled="True"
+                                       Margin="32,0,0,0"/>
+                        </Grid>
+
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+        <!--page content goes here-->
+
+    </Grid>
+</Page>

@@ -1,0 +1,632 @@
+﻿
+Microsoft Visual Studio Community 2019
+Version 16.9.4
+
+
+Mine a Bitcoin block using C#
+
+
+public sealed partial class MineBitcoinBlockPage : Page
+{
+    MainPage MainPage { get; }
+
+    byte[] BitcoinVersionBytes { get; set; } = new byte[4];
+    byte[] BitcoinVersionBytesLittleEndian { get; set; } = new byte[4];
+    byte[] HashOfPreviousBlockBytes { get; set; } = new byte[32];
+    byte[] HashOfPreviousBlockBytesLittleEndian { get; set; } = new byte[32];
+    byte[] HashOfMerkleRootBytes { get; set; } = new byte[32];
+    byte[] HashOfMerkleRootBytesLittleEndian { get; set; } = new byte[32];
+    byte[] TimestampBytes = new byte[4];
+    byte[] TimestampBytesLittleEndian = new byte[4];
+    byte[] BitsBytes = new byte[4];
+    byte[] BitsBytesLittleEndian = new byte[4];
+    byte[] NonceBytes { get; set; } = new byte[4];
+    byte[] NonceBytesLittleEndian { get; set; } = new byte[4];
+    byte[] ComposedBlockHeaderBytes { get; set; } = new byte[80]; //block header is 80 bytes
+
+    string targetString { get; set; }
+    string currentBlockHeaderHashString { get; set; }
+
+    int Year { get; set; }
+    int Month { get; set; }
+    int Day { get; set; }
+    int Hour { get; set; }
+    int Minute { get; set; }
+    int Second { get; set; }
+
+    public MineBitcoinBlockPage()
+    {
+        InitializeComponent();
+
+        Loaded += MineBitcoinBlockPage_Loaded;
+
+        MainPage = MainPage.CurrentMainPage;
+    }
+
+    private async void MineBitcoinBlockPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        string fileLocationAndName = @"Assets\MineBitcoinBlockPageCode.txt";
+        StorageFolder InstallationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+        StorageFile storageFile = await InstallationFolder.GetFileAsync(fileLocationAndName);
+        MineBitcoinBlockPageCodeTextBlock.Text = await FileIO.ReadTextAsync(storageFile);
+
+        InitiateUI();
+    }
+
+    private void InitiateUI()
+    {
+        uint bitcoinVersion = 2;
+        BitcoinVersionBytes = GetBytesBigEndian(bitcoinVersion);
+        BitcoinVersionAsDecimalTextBox.Text = bitcoinVersion.ToString();
+        BitcoinVersionAsHexTextBox.Text = ConvertBytesToString(BitcoinVersionBytes);
+        BitcoinVersionBytesLittleEndian = BitcoinVersionBytes.Reverse().ToArray();
+        BitcoinVersionAsHexLittleEndianTextBlock.Text = ConvertBytesToString(BitcoinVersionBytesLittleEndian);
+
+        string hashOfPreviousBlock = "0000000000000000ced0958bd27720b71d32c5847e40660aaca39f33c298abb0";
+        HashOfPreviousBlockTextBox.Text = hashOfPreviousBlock;
+        if (hashOfPreviousBlock.Length == 64)
+        {
+            for (int i = 0; i < 32; i++)
+            {
+                HashOfPreviousBlockBytes[i] = Convert.ToByte(hashOfPreviousBlock.Substring(i * 2, 2), 16);
+            }
+            HashOfPreviousBlockBytesLittleEndian = HashOfPreviousBlockBytes.Reverse().ToArray();
+            HashOfPreviousBlockLittleEndianTextBlock.Text = ConvertBytesToString(HashOfPreviousBlockBytesLittleEndian);
+        }
+
+        string hashOfMerkleRoot = "359d624d37aee1efa5662b7f5dbc390e996d561afc8148e8d716cf6ad765a952";
+        HashOfMerkleRootTextBox.Text = hashOfMerkleRoot;
+        if (hashOfMerkleRoot.Length == 64)
+        {
+            for (int i = 0; i < 32; i++)
+            {
+                HashOfMerkleRootBytes[i] = Convert.ToByte(hashOfMerkleRoot.Substring(i * 2, 2), 16);
+            }
+            HashOfMerkleRootBytesLittleEndian = HashOfMerkleRootBytes.Reverse().ToArray();
+            HashOfMerkleRootLittleEndianTextBlock.Text = ConvertBytesToString(HashOfMerkleRootBytesLittleEndian);
+        }
+
+        Year = DateTimeOffset.UtcNow.Year;
+        Month = DateTimeOffset.UtcNow.Month;
+        Day = DateTimeOffset.UtcNow.Day;
+        Hour = DateTimeOffset.UtcNow.Hour;
+        Minute = DateTimeOffset.UtcNow.Minute;
+        Second = DateTimeOffset.UtcNow.Second;
+
+        YearTextBox.Text = Year.ToString();
+        MonthTextBox.Text = Month.ToString();
+        DayTextBox.Text = Day.ToString();
+        HourTextBox.Text = Hour.ToString();
+        MinuteTextBox.Text = Minute.ToString();
+        SecondTextBox.Text = Second.ToString();
+
+        //specific block
+        YearTextBox.Text = 2014.ToString();
+        MonthTextBox.Text = 4.ToString();
+        DayTextBox.Text = 5.ToString();
+        HourTextBox.Text = 7.ToString();
+        MinuteTextBox.Text = 49.ToString();
+        SecondTextBox.Text = 18.ToString();
+
+        RebuildDateTime();
+
+        uint bits = 419486617;
+        BitsBytes = GetBytesBigEndian(bits);
+        BitsAsDecimalTextBox.Text = bits.ToString();
+        BitsAsHexTextBox.Text = ConvertBytesToString(BitsBytes);
+        BitsBytesLittleEndian = BitsBytes.Reverse().ToArray();
+        BitsAsHexLittleEndianTextBlock.Text = ConvertBytesToString(BitsBytesLittleEndian);
+
+        uint nonce = 1225187768;
+        NonceBytes = GetBytesBigEndian(nonce);
+        NonceAsDecimalTextBox.Text = nonce.ToString();
+        NonceAsHexTextBox.Text = ConvertBytesToString(NonceBytes);
+        NonceBytesLittleEndian = NonceBytes.Reverse().ToArray();
+        NonceAsHexLittleEndianTextBlock.Text = ConvertBytesToString(NonceBytesLittleEndian);
+
+        ComposeBlockHeaderAndHash();
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+
+        // code here
+        // code here
+    }
+
+    protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+    {
+        base.OnNavigatingFrom(e);
+
+        // code here
+        // code here
+    }
+
+    private void HomeAppBarButton_Tapped(object sender, TappedRoutedEventArgs e)
+    {
+        if (sender is AppBarButton)
+        {
+            MainPage.GoToHomePage();
+        }
+    }
+
+    private void RebuildDateTime()
+    {
+        DateTimeOffset dateTimeOffsetNow = new DateTimeOffset(new DateTime(Year, Month, Day, Hour, Minute, Second, 0), new TimeSpan(0));
+        SetDateTime(dateTimeOffsetNow);
+
+        ComposeBlockHeaderAndHash();
+    }
+
+    private void SetDateTime(DateTimeOffset dateTimeOffsetNow)
+    {
+        UtcDateTimeNowTextBlock.Text = dateTimeOffsetNow.ToString();
+        DateTimeOffset dateTimeOffset1970 = new DateTimeOffset(new DateTime(1970, 01, 01), new TimeSpan(0)); //1970-01-01 00:00:00 +00:00
+        UtcDateTime19700101TextBlock.Text = dateTimeOffset1970.ToString();
+
+        //we can calculate
+        uint totalSeconds = (uint)dateTimeOffsetNow.Subtract(dateTimeOffset1970).TotalSeconds;
+        //or use Unix
+        //uint totalSeconds = (uint)dateTimeOffsetNow.ToUnixTimeSeconds(); 
+
+        TimeDifferenceInSecondsAsDecimalTextBlock.Text = totalSeconds.ToString();
+
+        TimestampBytes = GetBytesBigEndian(totalSeconds);
+
+        TimestampAsHexTextBlock.Text = ConvertBytesToString(TimestampBytes);
+
+        TimestampBytesLittleEndian = TimestampBytes.Reverse().ToArray();
+        TimestampAsHexLittleEndianTextBlock.Text = ConvertBytesToString(TimestampBytesLittleEndian);
+    }
+
+    private void BitcoinVersionAsDecimalTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (uint.TryParse(BitcoinVersionAsDecimalTextBox.Text, out uint BitcoinVersion))
+        {
+            BitcoinVersionBytes = GetBytesBigEndian(BitcoinVersion);
+
+            BitcoinVersionAsHexTextBox.TextChanged -= BitcoinVersionAsHexTextBox_TextChanged;
+            BitcoinVersionAsHexTextBox.Text = ConvertBytesToString(BitcoinVersionBytes);
+            BitcoinVersionAsHexTextBox.TextChanged += BitcoinVersionAsHexTextBox_TextChanged;
+
+            BitcoinVersionBytesLittleEndian = BitcoinVersionBytes.Reverse().ToArray();
+            BitcoinVersionAsHexLittleEndianTextBlock.Text = ConvertBytesToString(BitcoinVersionBytesLittleEndian);
+            ComposeBlockHeaderAndHash();
+            MainPage.NotifyUser("Bitcoin block hash calculated.", NotifyType.StatusMessage);
+        }
+        else
+        {
+            MainPage.NotifyUser("Bitcoin version value outside of uint-range.", NotifyType.ErrorMessage);
+        }
+    }
+
+    private void BitcoinVersionAsHexTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        string hexBitcoinVersion = BitcoinVersionAsHexTextBox.Text;
+        if (hexBitcoinVersion.Length == 10)
+        {
+            hexBitcoinVersion = hexBitcoinVersion.Replace("0x", "");
+        }
+
+        if (hexBitcoinVersion.Length == 8)
+        {
+            BitcoinVersionAsDecimalTextBox.TextChanged -= BitcoinVersionAsDecimalTextBox_TextChanged;
+            BitcoinVersionAsDecimalTextBox.Text = uint.Parse(hexBitcoinVersion, NumberStyles.HexNumber).ToString();
+            BitcoinVersionAsDecimalTextBox.TextChanged += BitcoinVersionAsDecimalTextBox_TextChanged;
+
+            for (int i = 0; i < 4; i++)
+            {
+                BitcoinVersionBytes[i] = Convert.ToByte(hexBitcoinVersion.Substring(i * 2, 2), 16);
+            }
+            BitcoinVersionBytesLittleEndian = BitcoinVersionBytes.Reverse().ToArray();
+            BitcoinVersionAsHexLittleEndianTextBlock.Text = ConvertBytesToString(BitcoinVersionBytesLittleEndian);
+            ComposeBlockHeaderAndHash();
+            MainPage.NotifyUser("Bitcoin block hash calculated.", NotifyType.StatusMessage);
+        }
+    }
+
+    private void HashOfPreviousBlockTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        string hashOfPreviousBlock = HashOfPreviousBlockTextBox.Text;
+        if (hashOfPreviousBlock.Length == 64)
+        {
+            for (int i = 0; i < 32; i++)
+            {
+                HashOfPreviousBlockBytes[i] = Convert.ToByte(hashOfPreviousBlock.Substring(i * 2, 2), 16);
+            }
+            HashOfPreviousBlockBytesLittleEndian = HashOfPreviousBlockBytes.Reverse().ToArray();
+            HashOfPreviousBlockLittleEndianTextBlock.Text = ConvertBytesToString(HashOfPreviousBlockBytesLittleEndian);
+            ComposeBlockHeaderAndHash();
+            MainPage.NotifyUser("Bitcoin block hash calculated.", NotifyType.StatusMessage);
+        }
+    }
+
+    private void HashOfMerkleRootTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        string hashOfMerkleRoot = HashOfMerkleRootTextBox.Text;
+        if (hashOfMerkleRoot.Length == 64)
+        {
+            for (int i = 0; i < 32; i++)
+            {
+                HashOfMerkleRootBytes[i] = Convert.ToByte(hashOfMerkleRoot.Substring(i * 2, 2), 16);
+            }
+            HashOfMerkleRootBytesLittleEndian = HashOfMerkleRootBytes.Reverse().ToArray();
+            HashOfMerkleRootLittleEndianTextBlock.Text = ConvertBytesToString(HashOfMerkleRootBytesLittleEndian);
+            ComposeBlockHeaderAndHash();
+            MainPage.NotifyUser("Bitcoin block hash calculated.", NotifyType.StatusMessage);
+        }
+    }
+
+    private void BitsAsDecimalTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (uint.TryParse(BitsAsDecimalTextBox.Text, out uint bits))
+        {
+            BitsBytes = GetBytesBigEndian(bits);
+
+            BitsAsHexTextBox.TextChanged -= BitsAsHexTextBox_TextChanged;
+            BitsAsHexTextBox.Text = ConvertBytesToString(BitsBytes);
+            BitsAsHexTextBox.TextChanged += BitsAsHexTextBox_TextChanged;
+
+            BitsBytesLittleEndian = BitsBytes.Reverse().ToArray();
+            BitsAsHexLittleEndianTextBlock.Text = ConvertBytesToString(BitsBytesLittleEndian);
+            ComposeBlockHeaderAndHash();
+            MainPage.NotifyUser("Bitcoin block hash calculated.", NotifyType.StatusMessage);
+
+            CalculateTarget(BitsBytes);
+        }
+        else
+        {
+            MainPage.NotifyUser("Bits value outside of uint-range.", NotifyType.ErrorMessage);
+        }
+    }
+
+    private void BitsAsHexTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        string hexBits = BitsAsHexTextBox.Text;
+        if (hexBits.Length == 10)
+        {
+            hexBits = hexBits.Replace("0x", "");
+        }
+
+        if (hexBits.Length == 8)
+        {
+            BitsAsDecimalTextBox.TextChanged -= BitsAsDecimalTextBox_TextChanged;
+            BitsAsDecimalTextBox.Text = uint.Parse(hexBits, NumberStyles.HexNumber).ToString();
+            BitsAsDecimalTextBox.TextChanged += BitsAsDecimalTextBox_TextChanged;
+
+            for (int i = 0; i < 4; i++)
+            {
+                BitsBytes[i] = Convert.ToByte(hexBits.Substring(i * 2, 2), 16);
+            }
+            BitsBytesLittleEndian = BitsBytes.Reverse().ToArray();
+            BitsAsHexLittleEndianTextBlock.Text = ConvertBytesToString(BitsBytesLittleEndian);
+            ComposeBlockHeaderAndHash();
+            MainPage.NotifyUser("Bitcoin block hash calculated.", NotifyType.StatusMessage);
+
+            CalculateTarget(BitsBytes);
+        }
+    }
+
+    private void CalculateTarget(byte[] bitsBytes)
+    {
+        #region test
+        // ‘bits’ = 388618029 = 0x1729d72d
+        // The first byte is the index, followed by coefficients with 3 bytes. That is, the bits are the index of 0x17 and the coefficient of 0x29d72d.
+
+        //bitsBytes[0] = byte.Parse("17", NumberStyles.HexNumber);
+        //bitsBytes[1] = byte.Parse("29", NumberStyles.HexNumber);
+        //bitsBytes[2] = byte.Parse("d7", NumberStyles.HexNumber);
+        //bitsBytes[3] = byte.Parse("2d", NumberStyles.HexNumber);
+
+        // Target = coefficient * 2 ^ ( 8 * (index — 3) )
+        // Target = 0x29d72d * 2 ^ (0x08 * (0x17–0x03) )
+        // Target = 2742061 * 2 ^( 8 * (23–3) ) = 4.0075266411612129867925142360828e+54
+        // Target = 0x0000 0000 0000 0000 0029 d72d 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
+        #endregion test
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < bitsBytes.Length; i++)
+        {
+            stringBuilder.Append(bitsBytes[i].ToString("x2"));
+        }
+        string bitsBytesString = stringBuilder.ToString();
+        string indexString = bitsBytesString.Substring(0, 2);
+        string coefficientString = bitsBytesString.Substring(2, 6);
+        uint index = uint.Parse(indexString, NumberStyles.HexNumber);
+        uint coefficient = uint.Parse(coefficientString, NumberStyles.HexNumber);
+
+        BigInteger targetBigInteger = (BigInteger)(coefficient * Math.Pow(2, 8 * (index - 3)));
+
+        targetString = targetBigInteger.ToString("x").PadLeft(64, '0');
+
+        TargetTextBlock.Text = targetString;
+    }
+
+    private void NonceAsDecimalTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (uint.TryParse(NonceAsDecimalTextBox.Text, out uint nonce))
+        {
+            NonceBytes = GetBytesBigEndian(nonce);
+
+            NonceAsHexTextBox.TextChanged -= NonceAsHexTextBox_TextChanged;
+            NonceAsHexTextBox.Text = ConvertBytesToString(NonceBytes);
+            NonceAsHexTextBox.TextChanged += NonceAsHexTextBox_TextChanged;
+
+            NonceBytesLittleEndian = NonceBytes.Reverse().ToArray();
+            NonceAsHexLittleEndianTextBlock.Text = ConvertBytesToString(NonceBytesLittleEndian);
+            ComposeBlockHeaderAndHash();
+            MainPage.NotifyUser("Bitcoin block hash calculated.", NotifyType.StatusMessage);
+        }
+        else
+        {
+            MainPage.NotifyUser("Nonce value outside of uint-range.", NotifyType.ErrorMessage);
+        }
+    }
+
+    private void NonceAsHexTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        string hexNonce = NonceAsHexTextBox.Text;
+        if (hexNonce.Length == 10)
+        {
+            hexNonce = hexNonce.Replace("0x", "");
+        }
+
+        if (hexNonce.Length == 8)
+        {
+            NonceAsDecimalTextBox.TextChanged -= NonceAsDecimalTextBox_TextChanged;
+            NonceAsDecimalTextBox.Text = uint.Parse(hexNonce, NumberStyles.HexNumber).ToString();
+            NonceAsDecimalTextBox.TextChanged += NonceAsDecimalTextBox_TextChanged;
+
+            for (int i = 0; i < 4; i++)
+            {
+                NonceBytes[i] = Convert.ToByte(hexNonce.Substring(i * 2, 2), 16);
+            }
+            NonceBytesLittleEndian = NonceBytes.Reverse().ToArray();
+            NonceAsHexLittleEndianTextBlock.Text = ConvertBytesToString(NonceBytesLittleEndian);
+            ComposeBlockHeaderAndHash();
+            MainPage.NotifyUser("Bitcoin block hash calculated.", NotifyType.StatusMessage);
+        }
+    }
+
+    private void ComposeBlockHeaderAndHash()
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        int i = 0;
+        foreach (byte versionByte in BitcoinVersionBytesLittleEndian)
+        {
+            stringBuilder.Append(versionByte.ToString("x2"));
+            ComposedBlockHeaderBytes[i] = versionByte;
+            i++;
+        }
+        foreach (byte hashOfPreviousBlockByte in HashOfPreviousBlockBytesLittleEndian)
+        {
+            stringBuilder.Append(hashOfPreviousBlockByte.ToString("x2"));
+            ComposedBlockHeaderBytes[i] = hashOfPreviousBlockByte;
+            i++;
+        }
+        foreach (byte hashOfMerkleRootByte in HashOfMerkleRootBytesLittleEndian)
+        {
+            stringBuilder.Append(hashOfMerkleRootByte.ToString("x2"));
+            ComposedBlockHeaderBytes[i] = hashOfMerkleRootByte;
+            i++;
+        }
+        foreach (byte timeByte in TimestampBytesLittleEndian)
+        {
+            stringBuilder.Append(timeByte.ToString("x2"));
+            ComposedBlockHeaderBytes[i] = timeByte;
+            i++;
+        }
+        foreach (byte bitsByte in BitsBytesLittleEndian)
+        {
+            stringBuilder.Append(bitsByte.ToString("x2"));
+            ComposedBlockHeaderBytes[i] = bitsByte;
+            i++;
+        }
+        foreach (byte nonceByte in NonceBytesLittleEndian)
+        {
+            stringBuilder.Append(nonceByte.ToString("x2"));
+            ComposedBlockHeaderBytes[i] = nonceByte;
+            i++;
+        }
+
+        ComposedBlockHeaderTextBlock.Text = stringBuilder.ToString();
+
+        currentBlockHeaderHashString = CalculateBlockHeaderSHA256(ComposedBlockHeaderBytes);
+
+        CurrentBlockHeaderHashTextBlock.Text = currentBlockHeaderHashString;
+
+        if (currentBlockHeaderHashString != null && targetString != null)
+        {
+            if (currentBlockHeaderHashString.Length == 64 && targetString.Length == 64)
+            {
+                //string.Compare(currentBlockHeaderHashString, targetString)
+                //If currentBlockHeaderHashString is less than targetString, it returns -1.
+                //If currentBlockHeaderHashString is equal to targetString, it returns 0.
+                //If currentBlockHeaderHashString is greater than targetString, it returns 1.
+
+                switch (string.Compare(currentBlockHeaderHashString, targetString))
+                {
+                    case -1:
+                        IsBelowTargetTextBlock.Text="Current block header hash is less than target. You have mined a block.";
+                        break;
+                    case 0:
+                        IsBelowTargetTextBlock.Text = "Current block header hash is equal than target.";
+                        break;
+                    case 1:
+                        IsBelowTargetTextBlock.Text = "Current block header hash is greater than target.";
+                        break;
+                    default:
+                        IsBelowTargetTextBlock.Text = string.Empty;
+                        break;
+                }
+            }
+        }
+    }
+
+    string CalculateBlockHeaderSHA256(byte[] composedBlockHeaderBytes)
+    {
+        //calculate SHA256 first time
+        byte[] firstTimeHashBytes;
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            firstTimeHashBytes = sha256.ComputeHash(composedBlockHeaderBytes);
+        }
+
+        //calculate SHA256 second time
+        byte[] secondTimeHashBytes;
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            secondTimeHashBytes = sha256.ComputeHash(firstTimeHashBytes);
+        }
+
+        //reverse secondTimeHashBytes
+        byte[] currentBlockHeaderHashBytesReversed = secondTimeHashBytes.Reverse().ToArray();
+
+        //convert byte array to a string   
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < currentBlockHeaderHashBytesReversed.Length; i++)
+        {
+            stringBuilder.Append(currentBlockHeaderHashBytesReversed[i].ToString("x2"));
+        }
+        return stringBuilder.ToString();
+    }
+
+    private void YearTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (int.TryParse(YearTextBox.Text, out int year))
+        {
+            try
+            {
+                var x = new DateTime(year, Month, Day, Hour, Minute, Second);
+
+                Year = year;
+
+                RebuildDateTime();
+            }
+            catch (Exception ex)
+            {
+                MainPage.NotifyUser(ex.Message, NotifyType.StatusMessage);
+            }
+        }
+    }
+
+    private void MonthTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (int.TryParse(MonthTextBox.Text, out int month))
+        {
+            try
+            {
+                var x = new DateTime(Year, month, Day, Hour, Minute, Second);
+
+                Month = month;
+
+                RebuildDateTime();
+            }
+            catch (Exception ex)
+            {
+                MainPage.NotifyUser(ex.Message, NotifyType.StatusMessage);
+            }
+        }
+    }
+
+    private void DayTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (int.TryParse(DayTextBox.Text, out int day))
+        {
+            try
+            {
+                var x = new DateTime(Year, Month, day, Hour, Minute, Second);
+
+                Day = day;
+
+                RebuildDateTime();
+            }
+            catch (Exception ex)
+            {
+                MainPage.NotifyUser(ex.Message, NotifyType.StatusMessage);
+            }
+        }
+    }
+
+    private void HourTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (int.TryParse(HourTextBox.Text, out int hour))
+        {
+            try
+            {
+                var x = new DateTime(Year, Month, Day, hour, Minute, Second);
+
+                Hour = hour;
+
+                RebuildDateTime();
+            }
+            catch (Exception ex)
+            {
+                MainPage.NotifyUser(ex.Message, NotifyType.StatusMessage);
+            }
+        }
+    }
+
+    private void MinuteTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (int.TryParse(MinuteTextBox.Text, out int minute))
+        {
+            try
+            {
+                var x = new DateTime(Year, Month, Day, Hour, minute, Second);
+
+                Minute = minute;
+
+                RebuildDateTime();
+            }
+            catch (Exception ex)
+            {
+                MainPage.NotifyUser(ex.Message, NotifyType.StatusMessage);
+            }
+        }
+    }
+
+    private void SecondTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (int.TryParse(SecondTextBox.Text, out int second))
+        {
+            try
+            {
+                var x = new DateTime(Year, Month, Day, Hour, Minute, second);
+
+                Second = second;
+
+                RebuildDateTime();
+            }
+            catch (Exception ex)
+            {
+                MainPage.NotifyUser(ex.Message, NotifyType.StatusMessage);
+            }
+        }
+    }
+
+    private string ConvertBytesToString(byte[] bytes)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        foreach (byte oneByte in bytes)
+        {
+            stringBuilder.Append(oneByte.ToString("x2"));
+        }
+        return stringBuilder.ToString();
+    }
+
+    private byte[] GetBytesBigEndian(uint uintValue)
+    {
+        byte[] bytes = BitConverter.GetBytes(uintValue);
+        if (BitConverter.IsLittleEndian)
+        {
+            bytes = bytes.Reverse().ToArray();
+        }
+        return bytes;
+    }
+}
+
+___________________________
+
+updated 20210507 by Timo Kinnunen

@@ -1,0 +1,617 @@
+﻿<Page
+    x:Class="SHA256Studio.Views.MineBitcoinBlockPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Narrow">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PageTitleTextBlock.Margin" Value="0,0,0,0"/>
+                        <Setter Target="PageContentGrid.Margin" Value="0,0,4,4"/>
+                        <Setter Target="AppBarButtonScrollViewer.Margin" Value="0,0,0,0"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Wide">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}" />
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PageTitleTextBlock.Margin" Value="12,0,0,0"/>
+                        <Setter Target="PageContentGrid.Margin" Value="24,0,4,4"/>
+                        <Setter Target="AppBarButtonScrollViewer.Margin" Value="24,0,0,0"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="PageTitleTextBlock"
+                    Grid.Row="0"
+                    Style="{StaticResource TitleTextBlockStyle}" 
+                    Text="Mine Bitcoin block"
+                    Margin="0,0,4,0"/>
+
+        <ScrollViewer x:Name="AppBarButtonScrollViewer"
+                      Grid.Row="1">
+            <StackPanel x:Name="AppBarButtonStackPanel"
+                        Orientation="Horizontal">
+                <AppBarButton x:Name="HomeAppBarButton"
+                              Label="Home"
+                              ToolTipService.ToolTip="Go to Home page"
+                              Icon="Home"
+                              Tapped="HomeAppBarButton_Tapped"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!--page content goes here-->
+        <Grid x:Name="PageContentGrid"
+              Grid.Row="2">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel x:Name="HeaderStackPanel"
+                        Grid.Row="0"
+                        Margin="0,12,0,0">
+
+                <TextBlock Text="A block records some or all of the most recent Bitcoin transactions that have not yet entered any prior blocks."
+                           TextWrapping="Wrap"
+                           IsTextSelectionEnabled="True"
+                           Margin="0,4,4,4"/>
+
+                <Grid x:Name="BitcoinVersionGrid"
+                      Margin="0,4,4,4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Bitcoin version as decimal"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBox x:Name="BitcoinVersionAsDecimalTextBox"
+                             Grid.Row="1"
+                             Grid.Column="0"
+                             PlaceholderText="Enter bitcoin version as decimal"
+                             ToolTipService.ToolTip="Enter bitcoin version as decimal"
+                             Text="123456"
+                             TextChanged="BitcoinVersionAsDecimalTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="1"
+                               Text="Bitcoin version as hex"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBox x:Name="BitcoinVersionAsHexTextBox"
+                             Grid.Row="1"
+                             Grid.Column="1"
+                             PlaceholderText="Enter bitcoin version as hex"
+                             ToolTipService.ToolTip="Enter bitcoin version as hex"
+                             Text="aad6d5c3"
+                             TextChanged="BitcoinVersionAsHexTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"
+                             Margin="12,0,0,0"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="2"
+                               Text="Bitcoin version as hex little-endian"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBlock x:Name="BitcoinVersionAsHexLittleEndianTextBlock"
+                               Grid.Row="1"
+                               Grid.Column="2"
+                               Text="575b5478"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                </Grid>
+
+                <Grid x:Name="HashOfPreviousBlockGrid"
+                            Margin="0,4,4,4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Hash of previous block"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBox x:Name="HashOfPreviousBlockTextBox"
+                             Grid.Row="1"
+                             Grid.Column="0"
+                             PlaceholderText="Enter hash of previous block"
+                             ToolTipService.ToolTip="Enter hash of previous block"
+                             Text="0000000000000000000c0b575b54782ac1233b52167a4360b387a92aad6d5c36"
+                             TextChanged="HashOfPreviousBlockTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="1"
+                               Text="Hash of previous block little-endian"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBlock x:Name="HashOfPreviousBlockLittleEndianTextBlock"
+                               Grid.Row="1"
+                               Grid.Column="1"
+                               Text="0000000000000000000c0b575b54782ac1233b52167a4360b387a92aad6d5c36"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+
+                </Grid>
+
+                <Grid x:Name="HashOfMerkleRootGrid" 
+                      Margin="0,4,4,4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Hash of Merkle root(transactions)"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBox x:Name="HashOfMerkleRootTextBox"
+                             Grid.Row="1"
+                             Grid.Column="0"
+                             PlaceholderText="Enter hash of Merkle root(transactions)"
+                             ToolTipService.ToolTip="Enter hash of Merkle root(transactions)"
+                             Text="0337ef60d4a1290c5a0c541fc903f301a91f6bf9355788f9d1eb19785488456c"
+                             TextChanged="HashOfMerkleRootTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="1"
+                               Text="Hash of Merkle root(transactions) little-endian"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBlock x:Name="HashOfMerkleRootLittleEndianTextBlock"
+                               Grid.Row="1"
+                               Grid.Column="1"
+                               Text="0000000000000000000c0b575b54782ac1233b52167a4360b387a92aad6d5c36"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                </Grid>
+
+                <Grid x:Name="DateTimeNowGrid" 
+                      Margin="0,4,4,4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Year"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBox x:Name="YearTextBox"
+                             Grid.Row="1"
+                             Grid.Column="0"
+                             PlaceholderText="Enter year as decimal"
+                             ToolTipService.ToolTip="Enter year as decimal"
+                             Text="2021"
+                             TextChanged="YearTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="1"
+                               Text="Month"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBox x:Name="MonthTextBox"
+                             Grid.Row="1"
+                             Grid.Column="1"
+                             PlaceholderText="Enter month as decimal"
+                             ToolTipService.ToolTip="Enter month as decimal"
+                             Text="05"
+                             TextChanged="MonthTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"
+                             Margin="12,0,0,0"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="2"
+                               Text="Day"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBox x:Name="DayTextBox"
+                             Grid.Row="1"
+                             Grid.Column="2"
+                             PlaceholderText="Enter day as decimal"
+                             ToolTipService.ToolTip="Enter day as decimal"
+                             Text="03"
+                             TextChanged="DayTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"
+                             Margin="12,0,0,0"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="3"
+                               Text="Hour"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBox x:Name="HourTextBox"
+                             Grid.Row="1"
+                             Grid.Column="3"
+                             PlaceholderText="Enter hour as decimal"
+                             ToolTipService.ToolTip="Enter hour as decimal"
+                             Text="18"
+                             TextChanged="HourTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"
+                             Margin="12,0,0,0"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="4"
+                               Text="Minute"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBox x:Name="MinuteTextBox"
+                             Grid.Row="1"
+                             Grid.Column="4"
+                             PlaceholderText="Enter minute as decimal"
+                             ToolTipService.ToolTip="Enter minute as decimal"
+                             Text="45"
+                             TextChanged="MinuteTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"
+                             Margin="12,0,0,0"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="5"
+                               Text="Second"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBox x:Name="SecondTextBox"
+                             Grid.Row="1"
+                             Grid.Column="5"
+                             PlaceholderText="Enter second as decimal"
+                             ToolTipService.ToolTip="Enter second as decimal"
+                             Text="57"
+                             TextChanged="SecondTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"
+                             Margin="12,0,0,0"/>
+                </Grid>
+
+                <Grid x:Name="UtcDateTimeGrid" 
+                      Margin="0,4,4,4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="UtcDateTime now"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBlock x:Name="UtcDateTimeNowTextBlock"
+                               Grid.Row="1"
+                               Grid.Column="0"
+                               Text="2021-05-03 00:00:00 +00:00"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="1"
+                               Text="UtcDateTime 1970-01-01 00:00:00 +00:00"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBlock x:Name="UtcDateTime19700101TextBlock"
+                               Grid.Row="1"
+                               Grid.Column="1"
+                               Text="1970-01-01 00:00:00 +00:00"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="2"
+                               Text="Time difference in seconds"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBlock x:Name="TimeDifferenceInSecondsAsDecimalTextBlock"
+                               Grid.Row="1"
+                               Grid.Column="2"
+                               Text="123456"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="3"
+                               Text="Timestamp as hex"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBlock x:Name="TimestampAsHexTextBlock"
+                               Grid.Row="1"
+                               Grid.Column="3"
+                               Text="b6d6cb4d"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="4"
+                               Text="Timestamp as hex little-endian"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBlock x:Name="TimestampAsHexLittleEndianTextBlock"
+                               Grid.Row="1"
+                               Grid.Column="4"
+                               Text="b6d6cb4d"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"/>
+                </Grid>
+
+                <Grid x:Name="BitsGrid" 
+                      Margin="0,4,4,4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Bits(target) as decimal"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBox x:Name="BitsAsDecimalTextBox"
+                             Grid.Row="1"
+                             Grid.Column="0"
+                             PlaceholderText="Enter bits(target) as decimal"
+                             ToolTipService.ToolTip="Enter bits(target) as decimal"
+                             Text="123456"
+                             TextChanged="BitsAsDecimalTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="1"
+                               Text="Bits(target) as hex"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBox x:Name="BitsAsHexTextBox"
+                             Grid.Row="1"
+                             Grid.Column="1"
+                             PlaceholderText="Enter bits(target) as hex"
+                             ToolTipService.ToolTip="Enter bits(target) as hex"
+                             Text="aad6d5c3"
+                             TextChanged="BitsAsHexTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"
+                             Margin="12,0,0,0"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="2"
+                               Text="Bits(target) as hex little-endian"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBlock x:Name="BitsAsHexLittleEndianTextBlock"
+                               Grid.Row="1"
+                               Grid.Column="2"
+                               Text="575b5478"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                </Grid>
+
+                <Grid x:Name="NonceGrid"
+                      Margin="0,4,4,4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Nonce as decimal"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBox x:Name="NonceAsDecimalTextBox"
+                             Grid.Row="1"
+                             Grid.Column="0"
+                             PlaceholderText="Enter nonce as decimal"
+                             ToolTipService.ToolTip="Enter nonce as decimal"
+                             Text="123456"
+                             TextChanged="NonceAsDecimalTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="1"
+                               Text="Nonce as hex"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBox x:Name="NonceAsHexTextBox"
+                             Grid.Row="1"
+                             Grid.Column="1"
+                             PlaceholderText="Enter nonce as hex"
+                             ToolTipService.ToolTip="Enter nonce as hex"
+                             Text="aad6d5c3"
+                             TextChanged="NonceAsHexTextBox_TextChanged"
+                             TextWrapping="Wrap"
+                             IsSpellCheckEnabled="False"
+                             Margin="12,0,0,0"/>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="2"
+                               Text="Nonce as hex little-endian"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                    <TextBlock x:Name="NonceAsHexLittleEndianTextBlock"
+                               Grid.Row="1"
+                               Grid.Column="2"
+                               Text="575b5478"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"
+                               Margin="12,0,0,0"/>
+                </Grid>
+
+                <StackPanel x:Name="ComposedBlockHeaderStackPanel" 
+                            Margin="0,4,4,4">
+
+                    <TextBlock Text="Composed block header = Bitcoin version as hex little-endian + Hash of previous block little-endian + Hash of Merkle root(transactions) little-endian + Timestamp as hex little-endian + Bits(target) as hex little-endian + Nonce as hex little-endian."
+                               FontSize="10"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+
+                    <TextBlock Text="Composed block header"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBlock x:Name="ComposedBlockHeaderTextBlock"
+                               ToolTipService.ToolTip="Composed block header"
+                               Text="2fffe0000000000000000000000c0b575b54782ac1233b52167a4360b387a92aad6d5c360337ef60d4a1290c5a0c541fc903f301a91f6bf9355788f9d1eb19785488456cb6d6cb4d170da863d28f8545"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"/>
+                </StackPanel>
+
+                <StackPanel x:Name="BlockHashStackPanel" 
+                            Margin="0,4,4,4">
+
+                    <TextBlock Text="Current block header hash"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBlock x:Name="CurrentBlockHeaderHashTextBlock"
+                               ToolTipService.ToolTip="Block hash"
+                               Text="63c609949d309260f186dc3956def234f52e683bafd65ca3863e93e5c2d332d5"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"/>
+                </StackPanel>
+
+                <StackPanel x:Name="TargetStackPanel" 
+                            Margin="0,4,4,4">
+
+                    <TextBlock Text="Target"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBlock x:Name="TargetTextBlock"
+                               ToolTipService.ToolTip="Target"
+                               Text="63c609949d309260f186dc3956def234f52e683bafd65ca3863e93e5c2d332d5"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"/>
+                    <TextBlock x:Name="IsBelowTargetTextBlock"
+                               ToolTipService.ToolTip="Is below target"
+                               Text=""
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"/>
+                </StackPanel>
+
+                <HyperlinkButton Content="See latest mined Bitcoin blocks here www.blockchain.com" 
+                                 NavigateUri="https://www.blockchain.com/explorer?view=btc"
+                                 Margin="0,4,4,4"/>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1" 
+                          ScrollViewer.HorizontalScrollMode="Auto"
+                          ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                          ScrollViewer.VerticalScrollMode="Auto"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible"
+                          Margin="0,12,0,12">
+
+                <Frame BorderBrush="LightGray"
+                       BorderThickness="2"
+                       Margin="0,0,4,0">
+
+                    <TextBlock x:Name="MineBitcoinBlockPageCodeTextBlock" 
+                               Text="Here is Assets/MineBitcoinBlockPageCode.txt" 
+                               Padding="12"
+                               TextWrapping="Wrap"
+                               IsTextSelectionEnabled="True"/>
+                </Frame>
+            </ScrollViewer>
+        </Grid>
+        <!--page content goes here-->
+    </Grid>
+</Page>
